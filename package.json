@@ -1,0 +1,59 @@
+{
+	"name": "@askvortsov/rich-icu-message-formatter",
+	"version": "0.1.0",
+	"description": "An extension of @ultraq/icu-message-formatter that also supports rich text formatting.",
+	"author": "Alexander Skvortsov",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/askvortsov1/rich-icu-message-formatter.git"
+	},
+	"keywords": [
+		"rich",
+		"icu",
+		"message",
+		"format",
+		"messageformat",
+		"intl",
+		"i18n"
+	],
+	"module": "lib/rich-icu-message-formatter.es.js",
+	"main": "lib/rich-icu-message-formatter.cjs.js",
+	"sideEffects": false,
+	"scripts": {
+		"format": "eslint --fix \"**/*.js\"",
+		"lint": "eslint \"**/*.js\"",
+		"test": "jest",
+		"coverage": "cat ./coverage/lcov.info | coveralls",
+		"build": "rollup --config",
+		"prepublishOnly": "npm run build"
+	},
+	"dependencies": {
+		"@babel/runtime": "^7.11.2",
+		"@ultraq/array-utils": "^2.1.0",
+		"@ultraq/icu-message-formatter": "^0.10.0"
+	},
+	"devDependencies": {
+		"@babel/core": "^7.11.1",
+		"@babel/plugin-proposal-class-properties": "^7.10.4",
+		"@babel/plugin-transform-runtime": "^7.11.0",
+		"@babel/preset-env": "^7.11.0",
+		"@formatjs/intl-locale": "^2.4.14",
+		"@formatjs/intl-numberformat": "^6.1.4",
+		"@rollup/plugin-babel": "^5.1.0",
+		"@rollup/plugin-commonjs": "^14.0.0",
+		"@rollup/plugin-node-resolve": "^8.4.0",
+		"@types/jest": "^26.0.15",
+		"babel-eslint": "^10.1.0",
+		"coveralls": "^3.1.0",
+		"eslint": "^7.23.0",
+		"eslint-config-ultraq": "^2.4.0",
+		"eslint-plugin-compat": "^3.9.0",
+		"jest": "^26.6.3",
+		"mithril": "^2.0.4",
+		"rollup": "^2.23.0"
+	},
+	"engines": {
+		"node": ">=10"
+	}
+}
