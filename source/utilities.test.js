@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import { replaceRichTags } from './utilities';
+import { replaceRichTags, sanitizeValues } from './utilities';
 
 describe('replaceRichTags', function() {
 	const replaceWithObject = (tag, values, contents) => {
@@ -188,5 +188,28 @@ describe('replaceRichTags', function() {
 
 			expect(result).toStrictEqual([{ contents: ['< b>Hello!</b>'], tag: 'a' }]);
 		});
+	});
+});
+
+/**
+ * Tests for the input sanitization system
+ */
+describe('sanitizeValues', function() {
+	test('Works on string', function() {
+		const dangerous = {val: '<a><script></script></a>'};
+		const sanitized = {val: '&lt;a&gt;&lt;script&gt;&lt;/script&gt;&lt;/a&gt;'};
+		expect(sanitizeValues(dangerous)).toStrictEqual(sanitized);
+	});
+
+	test('Works on string arr', function() {
+		const dangerous = {script: '<a><script></script></a>', style:  '<style>HELLO</style>'};
+		const sanitized = { script: '&lt;a&gt;&lt;script&gt;&lt;/script&gt;&lt;/a&gt;', style: '&lt;style&gt;HELLO&lt;/style&gt;' };
+		expect(sanitizeValues(dangerous)).toStrictEqual(sanitized);
+	});
+
+	test('Works on nested arr', function() {
+		const dangerous = {mess: ['>', [], ['<'], [[[['<', ['>', ['<><>']]]]]]]};
+		const sanitized = {mess: ['&gt;', [], ['&lt;'], [[[['&lt;', ['&gt;', ['&lt;&gt;&lt;&gt;']]]]]]]};
+		expect(sanitizeValues(dangerous)).toStrictEqual(sanitized);
 	});
 });

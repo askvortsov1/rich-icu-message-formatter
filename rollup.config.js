@@ -27,6 +27,6 @@ export default {
 	external: [
 		/@babel\/runtime/,
 		'@ultraq/icu-message-formatter',
-		"@ultraq/array-utils",
+		'@ultraq/array-utils'
 	]
 };

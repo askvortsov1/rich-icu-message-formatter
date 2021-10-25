@@ -164,3 +164,39 @@ function traverseMessageTags(message, startI, startJ, result, onTagClose) {
 		}
 	}
 }
+
+/**
+ * Escapes HTML markup in string and nested array arguments.
+ *
+ * @param {Object} values
+ * @return {Object}
+ */
+export function sanitizeValues(values) {
+	return Object.keys(values).reduce((acc, key) => {
+		acc[key] = recSanitizeArr(values[key]);
+
+		return acc;
+	}, {});
+}
+
+/**
+ * Recursively escape HTML in string or string array.
+ *
+ * @param {string[]|string} input
+ * @return {string[]|string}
+ */
+function recSanitizeArr(input) {
+	if (typeof input === 'string' || input instanceof String) {
+		return input
+			.replace(/&/g, '&amp;')
+			.replace(/</g, '&lt;')
+			.replace(/>/g, '&gt;')
+			.replace(/"/g, '&quot;')
+			.replace(/'/g, '&#039;');
+	}
+	else if (Array.isArray(input)) {
+		return input.map(recSanitizeArr);
+	}
+
+	return input;
+}
