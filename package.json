@@ -31,7 +31,7 @@
 	"dependencies": {
 		"@babel/runtime": "^7.11.2",
 		"@ultraq/array-utils": "^2.1.0",
-		"@ultraq/icu-message-formatter": "^0.12.0-beta.0"
+		"@ultraq/icu-message-formatter": "^0.12.0"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.11.1",
