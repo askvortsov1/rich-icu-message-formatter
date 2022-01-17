@@ -1,6 +1,6 @@
 {
 	"name": "@askvortsov/rich-icu-message-formatter",
-	"version": "0.2.1",
+	"version": "0.2.2",
 	"description": "An extension of @ultraq/icu-message-formatter that also supports rich text formatting.",
 	"author": "Alexander Skvortsov",
 	"license": "MIT",
