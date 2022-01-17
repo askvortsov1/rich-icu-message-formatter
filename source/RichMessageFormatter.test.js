@@ -42,22 +42,6 @@ describe('RichMessageFormatter', function() {
 			expect(result).toStrictEqual(['have a ', { contents: ['link!'], tag: 'a' }]);
 		});
 
-		test('Rich formatting drops formatting from values', function() {
-			let formatter = new MessageFormatter('en-NZ', {}, customFormatter);
-
-			let result = formatter.rich('have a {contents}', { contents: '<a>link!</a>' });
-
-			expect(result).toStrictEqual(['have a ', '&lt;a&gt;link!&lt;/a&gt;']);
-		});
-
-		test('Rich formatting drops formatting from values if passed as tricky nested array', function() {
-			let formatter = new MessageFormatter('en-NZ', {}, customFormatter);
-
-			let result = formatter.rich('have a {contents}', { contents: [[], ['<a>link!</a>']] });
-
-			expect(result).toStrictEqual(['have a ', '&lt;a&gt;link!&lt;/a&gt;']);
-		});
-
 		test('Values passed as object arent formatted in', function() {
 			let formatter = new MessageFormatter('en-NZ', {}, customFormatter);
 

@@ -15,6 +15,12 @@ export default class RichMessageFormatter extends MessageFormatter {
 
 		const formatted = flatten(this.process(message, cleanedValues));
 
-		return replaceRichTags(formatted, cleanedValues, this.richHandler);
+		let sym = Symbol();
+		const fakeValues = Object.fromEntries(Object.entries(values).map(([key, _value]) => [key, sym]));
+		const formattedFake = flatten(this.process(message, fakeValues));
+		const replaceFake = replaceRichTags(formattedFake, fakeValues, () => sym);
+		const originalTemplateSegmentIndices = replaceFake.map((v, i) => v === sym ? null: i).filter(i => i !== null);
+
+		return replaceRichTags(formatted, cleanedValues, this.richHandler, originalTemplateSegmentIndices);
 	}
 }

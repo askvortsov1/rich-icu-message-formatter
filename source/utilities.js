@@ -3,16 +3,24 @@
  * No spaces allowed in tag name, syntax MUST be <TAG_NAME>SOME_CONTENTS</TAG_NAME>.
  * Currently does not support tags with attributes.
  * Currently does not support self closing tags.
- * 
+ *
  * @param {String[]|any[]} message
  * @param {Object} values
  * @param {Function} handler
+ * @param {Number[]} [dontUnescapeIndices]
  * @return {String[]|any[]}
  */
-export function replaceRichTags(message, values, handler) {
+export function replaceRichTags(message, values, handler, dontUnescapeIndices = []) {
 	const result = [];
 
-	const onTagClose = (segment, currTagIsClosing, currTag, i, j, currTagStart) => {
+	const onTagClose = (
+		segment,
+		currTagIsClosing,
+		currTag,
+		i,
+		j,
+		currTagStart
+	) => {
 		if (currTagIsClosing) {
 			return {
 				break: true
@@ -39,28 +47,47 @@ export function replaceRichTags(message, values, handler) {
 			for (let k = i + 1; k < endingLocation.segmentIndex; k++) {
 				tagContents.push(message[k]);
 			}
-			tagContents.push(segmentContainingClosingTag.slice(0, endingLocation.segmentStart));
+			tagContents.push(
+				segmentContainingClosingTag.slice(0, endingLocation.segmentStart)
+			);
 		}
 
 		result.push(segment.slice(0, currTagStart));
 
-		result.push(handler(currTag, values, replaceRichTags(tagContents.filter(s => s !== ''), values, handler)));
+		result.push(
+			handler(
+				currTag,
+				values,
+				replaceRichTags(
+					tagContents.filter((s) => s !== ''),
+					values,
+					handler
+				)
+			)
+		);
 
-		message.splice(endingLocation.segmentIndex + 1, 0, segmentContainingClosingTag.slice(endingLocation.segmentEnd + 1));
+		message.splice(
+			endingLocation.segmentIndex + 1,
+			0,
+			segmentContainingClosingTag.slice(endingLocation.segmentEnd + 1)
+		);
 
-
-		return { processedSegment: true, newSegmentIndex: endingLocation.segmentIndex, break: true };
+		return {
+			processedSegment: true,
+			newSegmentIndex: endingLocation.segmentIndex,
+			break: true
+		};
 	};
 
 	traverseMessageTags(message, 0, 0, result, onTagClose);
 
-	return result.filter(s => s !== '');
+	return result.filter((s) => s !== '').map((s, i) => dontUnescapeIndices.includes(i) ? s : unEscapeHtml(s));
 }
 
 /**
  * Finds the index of the matching closing tag, including through strings that
  * could have nested tags.
- * 
+ *
  * @param {String[]|any[]} message
  * @param {String} tag
  * @param {Number} startIndex
@@ -68,10 +95,17 @@ export function replaceRichTags(message, values, handler) {
  * @return {Boolean}
  */
 function findClosingTag(message, tag, startIndex, startSegmentIndex) {
-	let position;  // set in callback
+	let position; // set in callback
 	let depth = 1;
 
-	const onTagClose = (segment, currTagIsClosing, currTag, i, j, currTagStart) => {
+	const onTagClose = (
+		segment,
+		currTagIsClosing,
+		currTag,
+		i,
+		j,
+		currTagStart
+	) => {
 		if (currTag === tag) {
 			if (currTagIsClosing) {
 				depth--;
@@ -100,7 +134,7 @@ function findClosingTag(message, tag, startIndex, startSegmentIndex) {
 }
 
 function traverseMessageTags(message, startI, startJ, result, onTagClose) {
-	const isHtmlTagChar = ch => /[a-zA-Z-_]/.test(ch);
+	const isHtmlTagChar = (ch) => /[a-zA-Z-_]/.test(ch);
 	for (let i = startI; i < message.length; i++) {
 		const segment = message[i];
 
@@ -114,7 +148,7 @@ function traverseMessageTags(message, startI, startJ, result, onTagClose) {
 		let inTag = false;
 
 		let processedSegment = false;
-		for (let j = (i === startI ? startJ : 0); j < segment.length; j++) {
+		for (let j = i === startI ? startJ : 0; j < segment.length; j++) {
 			// Start of tag
 			if (!inTag && segment[j] === '<') {
 				currTagStart = j;
@@ -130,7 +164,14 @@ function traverseMessageTags(message, startI, startJ, result, onTagClose) {
 			else if (inTag && segment[j] === '>') {
 				const currTag = segment.slice(currTagStart + 1 + currTagIsClosing, j);
 
-				const instructions = onTagClose(segment, currTagIsClosing, currTag, i, j, currTagStart);
+				const instructions = onTagClose(
+					segment,
+					currTagIsClosing,
+					currTag,
+					i,
+					j,
+					currTagStart
+				);
 
 				if (instructions.exit) {
 					return;
@@ -158,7 +199,6 @@ function traverseMessageTags(message, startI, startJ, result, onTagClose) {
 			}
 		}
 
-
 		if (!processedSegment) {
 			result.push(segment);
 		}
@@ -180,12 +220,31 @@ export function sanitizeValues(values) {
 }
 
 /**
+ * De-sanitizes HTML markup.
+ *
+ * @param {any} str
+ * @return {string}
+ */
+export function unEscapeHtml(str) {
+	if (typeof str !== 'string') {
+		return str;
+	}
+
+	return str
+		.replace(/&lt;/g, '<')
+		.replace(/&gt;/g, '>')
+		.replace(/&amp;/g, '&')
+		.replace(/&quot;/g, '"')
+		.replace(/&#39;/g, "'");
+}
+
+/**
  * Recursively escape HTML in string or string array.
  *
  * @param {string[]|string} input
  * @return {string[]|string}
  */
-function recSanitizeArr(input) {
+export function recSanitizeArr(input) {
 	if (typeof input === 'string' || input instanceof String) {
 		return input
 			.replace(/&/g, '&amp;')
