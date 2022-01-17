@@ -7,9 +7,10 @@
  * @param {String[]|any[]} message
  * @param {Object} values
  * @param {Function} handler
+ * @param {Number[]} [dontUnescapeIndices]
  * @return {String[]|any[]}
  */
-export function replaceRichTags(message, values, handler) {
+export function replaceRichTags(message, values, handler, dontUnescapeIndices = []) {
 	const result = [];
 
 	const onTagClose = (
@@ -80,7 +81,7 @@ export function replaceRichTags(message, values, handler) {
 
 	traverseMessageTags(message, 0, 0, result, onTagClose);
 
-	return result.filter((s) => s !== '').map((s) => unEscapeHtml(s));
+	return result.filter((s) => s !== '').map((s, i) => dontUnescapeIndices.includes(i) ? s : unEscapeHtml(s));
 }
 
 /**
@@ -243,7 +244,7 @@ export function unEscapeHtml(str) {
  * @param {string[]|string} input
  * @return {string[]|string}
  */
-function recSanitizeArr(input) {
+export function recSanitizeArr(input) {
 	if (typeof input === 'string' || input instanceof String) {
 		return input
 			.replace(/&/g, '&amp;')

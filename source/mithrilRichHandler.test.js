@@ -58,4 +58,20 @@ describe('Integration tests with full rich formatter', function() {
 		vnode1.children[0].children[0].children = m.fragment('Hi <script>prompt("gotcha");</script>').children;
 		expect(result).toStrictEqual(['Start: ', vnode1, ' ', m('strong', {}, m('hr'))]);
 	});
+
+	test('Initially escaped characters in content stay escaped.', function() {
+		let formatter = new MessageFormatter('en-NZ', {}, mithrilRichHandler);
+
+		let result = formatter.rich('have a {contents}', { contents: '"quoted" &amp; entities' });
+
+		expect(result).toStrictEqual(['have a ', '"quoted" &amp; entities']);
+	});
+
+	test('Special characters in template arent escaped.', function() {
+		let formatter = new MessageFormatter('en-NZ', {}, mithrilRichHandler);
+
+		let result = formatter.rich('"have" a &amp; {contents}', { contents: '"quoted" entities' });
+
+		expect(result).toStrictEqual(['"have" a &amp; ', '"quoted" entities']);
+	});
 });
