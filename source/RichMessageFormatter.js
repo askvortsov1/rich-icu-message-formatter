@@ -15,7 +15,10 @@ export default class RichMessageFormatter extends MessageFormatter {
 
 		const formatted = flatten(this.process(message, cleanedValues));
 
-		let sym = Symbol();
+		// TODO
+		// Should be a symbol but isn't because of conversion issues.
+		// We use a random string instead. 
+		let sym = Math.random().toString(36) + Math.random().toString(36) + Math.random().toString(36);
 		const fakeValues = Object.fromEntries(Object.entries(values).map(([key, _value]) => [key, sym]));
 		const formattedFake = flatten(this.process(message, fakeValues));
 		const replaceFake = replaceRichTags(formattedFake, fakeValues, () => sym);
