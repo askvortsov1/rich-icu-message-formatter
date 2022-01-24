@@ -43,11 +43,14 @@ describe('replaceRichTags', function() {
 			expect(result).toStrictEqual(['Hello World <br />']);
 		});
 
-		test('Errors when tag unclosed', function() {
-			expect(() => {
-				replaceRichTags(['<a>Hello!'], {}, replaceWithObject);
-			}).toThrowError();
+		test('Returns when tag unclosed', function() {
+			expect(replaceRichTags(['<a>Hello!'], {}, replaceWithObject)).toStrictEqual(['<a>Hello!']);
 		});
+
+		test('Processes internal when tag unclosed', function() {
+			expect(replaceRichTags(['<a><p>Hello!</p>'], {}, replaceWithObject)).toStrictEqual(['<a>', {contents: ['Hello!'], tag: 'p'}]);
+		});
+
 
 		test('Doesnt change multiple empty strings', function() {
 			let result = replaceRichTags(['no', 'tags', 'here!'], {}, replaceWithObject);

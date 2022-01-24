@@ -30,7 +30,7 @@ export function replaceRichTags(message, values, handler, dontUnescapeIndices = 
 		const endingLocation = findClosingTag(message, currTag, i, j);
 
 		if (!endingLocation) {
-			throw new Error(`Unbalanced tags: no closing tag found for <${currTag}>`);
+		  return result;
 		}
 
 		const entireTagInSegment = endingLocation.segmentIndex === i;
@@ -233,9 +233,9 @@ export function unEscapeHtml(str) {
 	return str
 		.replace(/&lt;/g, '<')
 		.replace(/&gt;/g, '>')
-		.replace(/&amp;/g, '&')
 		.replace(/&quot;/g, '"')
-		.replace(/&#39;/g, "'");
+		.replace(/&#039;/g, "'")
+		.replace(/&amp;/g, '&');
 }
 
 /**

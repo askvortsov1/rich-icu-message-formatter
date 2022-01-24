@@ -59,19 +59,19 @@ describe('Integration tests with full rich formatter', function() {
 		expect(result).toStrictEqual(['Start: ', vnode1, ' ', m('strong', {}, m('hr'))]);
 	});
 
-	test('Initially escaped characters in content stay escaped.', function() {
+	test('Initially escaped characters stay escaped.', function() {
 		let formatter = new MessageFormatter('en-NZ', {}, mithrilRichHandler);
 
-		let result = formatter.rich('have a {contents}', { contents: '"quoted" &amp; entities' });
+		let result = formatter.rich('have a &#039;&amp;&quot;&lt;&gt; {contents}', { contents: '"quoted" &#039;&amp;&quot;&lt;&gt; entities' });
 
-		expect(result).toStrictEqual(['have a ', '"quoted" &amp; entities']);
+		expect(result).toStrictEqual(['have a &#039;&amp;&quot;&lt;&gt; ', '"quoted" &#039;&amp;&quot;&lt;&gt; entities']);
 	});
 
-	test('Special characters in template arent escaped.', function() {
+	test('Special characters arent escaped.', function() {
 		let formatter = new MessageFormatter('en-NZ', {}, mithrilRichHandler);
 
-		let result = formatter.rich('"have" a &amp; {contents}', { contents: '"quoted" entities' });
+		let result = formatter.rich('"have" a \'"&<> {contents}', { contents: '"quoted" entities \'<>&' });
 
-		expect(result).toStrictEqual(['"have" a &amp; ', '"quoted" entities']);
+		expect(result).toStrictEqual(['"have" a \'"&<> ', '"quoted" entities \'<>&']);
 	});
 });
